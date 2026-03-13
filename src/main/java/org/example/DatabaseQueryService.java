@@ -12,29 +12,30 @@ import java.util.stream.Collectors;
 
 public class DatabaseQueryService {
 
+    private String readSql(String file) {
+        return new BufferedReader(
+                new InputStreamReader(
+                        Objects.requireNonNull(getClass().getClassLoader().getResourceAsStream("sql/" + file))
+                )
+        ).lines().collect(Collectors.joining("\n"));
+    }
+
     public List<MaxProjectCountClient> findMaxProjectsClient() {
 
         List<MaxProjectCountClient> result = new ArrayList<>();
 
         try {
             Connection conn = Database.getInstance().getConnection();
+            String sql = readSql("find_max_projects_client.sql");
 
-            String sql = new BufferedReader(
-                    new InputStreamReader(
-                            Objects.requireNonNull(getClass().getClassLoader()
-                                    .getResourceAsStream("sql/find_max_projects_client.sql"))
-                    )
-            ).lines().collect(Collectors.joining("\n"));
+            Statement st = conn.createStatement();
+            ResultSet rs = st.executeQuery(sql);
 
-            try (Statement statement = conn.createStatement();
-                 ResultSet rs = statement.executeQuery(sql)) {
-
-                while (rs.next()) {
-                    String name = rs.getString("name");
-                    int projectCount = rs.getInt("project_count");
-
-                    result.add(new MaxProjectCountClient(name, projectCount));
-                }
+            while (rs.next()) {
+                result.add(new MaxProjectCountClient(
+                        rs.getString("name"),
+                        rs.getInt("project_count")
+                ));
             }
 
         } catch (Exception e) {
@@ -42,5 +43,55 @@ public class DatabaseQueryService {
         }
 
         return result;
+    }
+
+    public List<Client> findAllClients() {
+
+        List<Client> clients = new ArrayList<>();
+
+        try {
+            Connection conn = Database.getInstance().getConnection();
+            String sql = readSql("find_all_clients.sql");
+
+            Statement st = conn.createStatement();
+            ResultSet rs = st.executeQuery(sql);
+
+            while (rs.next()) {
+                clients.add(new Client(
+                        rs.getLong("id"),
+                        rs.getString("name")
+                ));
+            }
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+        return clients;
+    }
+
+    public List<Project> findAllProjects() {
+
+        List<Project> projects = new ArrayList<>();
+
+        try {
+            Connection conn = Database.getInstance().getConnection();
+            String sql = readSql("find_all_projects.sql");
+
+            Statement st = conn.createStatement();
+            ResultSet rs = st.executeQuery(sql);
+
+            while (rs.next()) {
+                projects.add(new Project(
+                        rs.getLong("id"),
+                        rs.getString("name")
+                ));
+            }
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+        return projects;
     }
 }

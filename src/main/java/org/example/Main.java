@@ -1,19 +1,22 @@
 package org.example;
 
-import java.util.List;
-
 
 public class Main {
     public static void main(String[] args) {
         DatabaseInitService.main(args);
         DatabasePopulateService.main(args);
         DatabaseQueryService queryService = new DatabaseQueryService();
-        List<MaxProjectCountClient> maxProjectClients =
-                queryService.findMaxProjectsClient();
 
-        System.out.println("MaxProjectCountClient:");
-        for (MaxProjectCountClient client : maxProjectClients) {
-            System.out.println(client.getName() + " : " + client.getProjectCount());
-        }
+        System.out.println("Clients:");
+        queryService.findAllClients()
+                .forEach(c -> System.out.println(c.getId() + " " + c.getName()));
+
+        System.out.println("Projects:");
+        queryService.findAllProjects()
+                .forEach(p -> System.out.println(p.getId() + " " + p.getName()));
+
+        System.out.println("Max project client:");
+        queryService.findMaxProjectsClient()
+                .forEach(c -> System.out.println(c.getName() + " : " + c.getProjectCount()));
     }
 }
