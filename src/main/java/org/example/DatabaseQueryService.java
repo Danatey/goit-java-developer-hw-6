@@ -94,4 +94,108 @@ public class DatabaseQueryService {
 
         return projects;
     }
+
+    public List<MaxSalaryWorker> findMaxSalaryWorker() {
+
+        List<MaxSalaryWorker> workers = new ArrayList<>();
+
+        try {
+            Connection conn = Database.getInstance().getConnection();
+            String sql = readSql("find_max_salary_worker.sql");
+
+            Statement st = conn.createStatement();
+            ResultSet rs = st.executeQuery(sql);
+
+            while (rs.next()) {
+                workers.add(new MaxSalaryWorker(
+                        rs.getInt("salary"),
+                        rs.getString("name")
+                ));
+            }
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+        return workers;
+    }
+
+    public List<LongestProject> findLongestProject() {
+
+        List<LongestProject> projects = new ArrayList<>();
+
+        try {
+            Connection conn = Database.getInstance().getConnection();
+            String sql = readSql("find_longest_project.sql");
+
+            Statement st = conn.createStatement();
+            ResultSet rs = st.executeQuery(sql);
+
+            while (rs.next()) {
+                projects.add(new LongestProject(
+                        rs.getString("name"),
+                        rs.getInt("month_count")
+                ));
+            }
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+        return projects;
+    }
+
+    public List<YoungestEldestWorker> findYoungestEldestWorkers() {
+
+        List<YoungestEldestWorker> workers = new ArrayList<>();
+
+        try {
+            Connection conn = Database.getInstance().getConnection();
+
+            String sql = readSql("find_youngest_eldest_workers.sql");
+
+            Statement statement = conn.createStatement();
+            ResultSet rs = statement.executeQuery(sql);
+
+            while (rs.next()) {
+
+                workers.add(new YoungestEldestWorker(
+                        rs.getString("type"),
+                        rs.getString("name"),
+                        rs.getDate("birthday")
+                ));
+            }
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+        return workers;
+    }
+
+    public List<ProjectPrice> printProjectPrices() {
+
+        List<ProjectPrice> prices = new ArrayList<>();
+
+        try {
+            Connection conn = Database.getInstance().getConnection();
+
+            String sql = readSql("print_project_prices.sql");
+
+            Statement statement = conn.createStatement();
+            ResultSet rs = statement.executeQuery(sql);
+
+            while (rs.next()) {
+                prices.add(new ProjectPrice(
+                        rs.getString("name"),
+                        rs.getInt("price")
+                ));
+            }
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+        return prices;
+    }
 }
